@@ -15,13 +15,22 @@ app.get('/', (req, res) => {
 app.get('/products', (req, res) => {
   res.render('products');
 });
-
+app.get('/pricing', (req, res) => {
+  res.render('pricing');
+});
 app.get('/about', (req, res) => {
   res.render('about');
 });
 
 app.get('/contact', (req, res) => {
   res.render('contact');
+});
+
+app.get('/encdec', (req, res) => {
+  res.render('encdec');
+});
+app.get('/format', (req, res) => {
+  res.render('format');
 });
 
 

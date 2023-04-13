@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"  crossorigin="anonymous">
+
+    <title>Format</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+    
+      .page-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+    
+      .content-wrapper {
+        flex-grow: 1;
+      }
+      /* pre {
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            overflow: auto;
+            max-height: 615px;
+        } */
+    </style>
+    
+
+  </head>
+  <body>
+    <div class="page-container">
+    <header>
+      <%- include('layout') %>
+      
+    </header>
+    <div class="content-wrapper">
+      
+    <main class="container mt-2">
+      <%- include('prodmenu') %>
+      <section id="main" class="my-1">
+        
+      <h2 class="mb-3">JSON/XML Format</h2>
+      <div class="row">
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="inputText" class="form-label">Input JSON/XML:</label>
+                    <textarea class="form-control" id="inputText" rows="15" placeholder="Enter JSON or XML here..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-primary me-2" onclick="formatJson()">Format JSON</button>
+                    <button class="btn btn-secondary" onclick="formatXml()">Format XML</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="outputText" class="form-label">Formatted Output:</label>
+                    <pre id="outputText" class="form-control"></pre>
+                </div>
+                <!-- <button class="btn btn-success" onclick="copyToClipboard()">Copy to Clipboard</button> -->
+            </div>
+        </div>
+    
+      </div>
+      </section>
+    </main>
+  </div>
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+        <p>&copy; 2023 My Landing Page. All Rights Reserved.</p>
+        </div>
+    </footer>
+  </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+
+    <script>
+        const inputText = document.getElementById('inputText');
+		const outputText = document.getElementById('outputText');
+
+		function formatJson() {
+			try {
+				const input = inputText.value;
+				JSON.parse(input); // Check if it is a valid JSON
+				const formatted = js_beautify(input, { indent_size: 2, space_in_empty_paren: true });
+				outputText.innerHTML = hljs.highlight('json', formatted).value;
+			} catch (e) {
+				outputText.textContent = 'Invalid JSON.';
+			}
+		}
+
+		function formatXml() {
+			try {
+				const input = inputText.value;
+				var xmlDoc = new DOMParser().parseFromString(input, 'application/xml');
+				var xsltDoc = new DOMParser().parseFromString([
+					// describes how we want to modify the XML - indent everything
+					'<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform">',
+					'  <xsl:strip-space elements="*"/>',
+					'  <xsl:template match="para[content-style][not(text())]">', // change to just text() to strip space in text nodes
+					'    <xsl:value-of select="normalize-space(.)"/>',
+					'  </xsl:template>',
+					'  <xsl:template match="node()|@*">',
+					'    <xsl:copy><xsl:apply-templates select="node()|@*"/></xsl:copy>',
+					'  </xsl:template>',
+					'  <xsl:output indent="yes"/>',
+					'</xsl:stylesheet>',
+				].join('\n'), 'application/xml');
+				var xsltProcessor = new XSLTProcessor();    
+				xsltProcessor.importStylesheet(xsltDoc);
+				var resultDoc = xsltProcessor.transformToDocument(xmlDoc);
+				var resultXml = new XMLSerializer().serializeToString(resultDoc);
+				//outputText.innerHTML = hljs.highlight('xml', resultXml).value;
+				outputText.innerHTML = hljs.highlight(resultXml, {language: "xml", ignoreIllegals: true }).value;
+			} catch (e) {
+				outputText.textContent = 'Invalid XML.';
+			}
+		}
+		function copyToClipboard() {
+            outputText.select;
+            document.execCommand('copy');
+            alert('Output copied to clipboard.');
+        }
+
+    </script>
+
+    </body>
+</html>
+
