@@ -33,6 +33,17 @@ app.get('/format', (req, res) => {
   res.render('format');
 });
 
+app.get('/coderev', (req, res) => {
+  res.render('coderev');
+});
+
+app.get('/logrev', (req, res) => {
+  res.render('logrev');
+});
+
+app.get('/calc', (req, res) => {
+  res.render('calc');
+});
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);
